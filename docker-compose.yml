@@ -1,0 +1,29 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/ml_models:/app/ml_models
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+    networks:
+      - sentiment-network
+
+  frontend:
+    build: .
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - sentiment-network
+
+networks:
+  sentiment-network:
+    driver: bridge
